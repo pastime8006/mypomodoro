@@ -56,7 +56,11 @@ $('start').addEventListener('click',start);$('reset').addEventListener('click',(
 $('sound').addEventListener('click',()=>{alarm=!alarm;$('sound').textContent='Son : '+(alarm?'oui':'non');$('sound').setAttribute('aria-pressed',String(alarm));if(alarm)beep()});
 $('apply').addEventListener('click',()=>{const count=Number($('count').value),work=Number($('work').value),rest=Number($('rest').value);if(!Number.isInteger(count)||count<1||count>20||!Number.isInteger(work)||work<1||work>180||!Number.isInteger(rest)||rest<1||rest>60){message('Valeurs autorisées : 1–20 sessions, travail 1–180 min, pause 1–60 min.');return}cfg={count,work,rest};init();message('Réglages appliqués. Nouveau cycle prêt.')});
 init();
-})();
+// Permet à un lien Notion vers ?start=1 de lancer le minuteur à l'ouverture.
+if (new URLSearchParams(window.location.search).get('start') === '1') {
+  start();
+}
+})(); 
 </script>
 </body>
 </html>
