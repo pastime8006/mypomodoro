@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Focus Studio — Pomodoro</title>
+<style>
+:root{color-scheme:dark;--bg:#111411;--panel:#191d19;--line:#303730;--text:#edf0e9;--muted:#a0a99f;--accent:#c7d6bd;--accentText:#182017}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:900px;margin:0 auto;padding:28px 18px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:22px}.eyebrow,.tiny{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}h1{font-size:27px;letter-spacing:-.04em;margin:3px 0}.layout{display:grid;grid-template-columns:1.15fr 1fr;gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;min-width:0}.row{display:flex;align-items:center;justify-content:space-between;gap:10px}.timer{width:min(68vw,270px);aspect-ratio:1;margin:18px auto;position:relative}.timer svg{width:100%;height:100%;transform:rotate(-90deg)}circle{fill:none;stroke-width:5}.track{stroke:var(--line)}#arc{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset .2s linear}.center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}.time{font-size:clamp(42px,10vw,65px);font-weight:350;letter-spacing:-.055em;line-height:1.2}.muted{color:var(--muted)}.controls{display:flex;gap:8px;margin-top:10px}.controls>*{flex:1}.btn{min-height:42px;border-radius:10px;padding:10px 13px;border:1px solid var(--line);background:#222822;color:var(--text);font:inherit;font-size:13px;font-weight:650;cursor:pointer}.btn.primary{background:var(--accent);color:var(--accentText);border-color:var(--accent)}.btn:disabled{opacity:.4;cursor:not-allowed}label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}input{width:100%;min-width:0;padding:10px;border:1px solid var(--line);border-radius:9px;background:#111511;color:var(--text);font:inherit}.settings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:15px 0}.bar{height:6px;background:var(--line);border-radius:10px;overflow:hidden}.bar>div{height:100%;width:0;background:var(--accent);transition:width .2s}.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}.stat{border:1px solid var(--line);border-radius:10px;padding:12px}.stat strong{display:block;font-size:24px;font-weight:450}.sessions{display:flex;gap:6px;margin-top:12px}.session{height:32px;min-width:0;flex:1;display:grid;place-items:center;background:#222822;border:1px solid var(--line);border-radius:6px;color:var(--muted);font-size:12px}.session.done{background:var(--accent);color:var(--accentText);border-color:var(--accent)}.session.current{border:2px solid var(--accent);color:var(--text);font-weight:700}.message{min-height:22px;font-size:12px;color:var(--muted);margin-top:12px}.small{font-size:12px;color:var(--muted)}button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:650px){main{padding:20px 12px}.layout{grid-template-columns:1fr}.panel{padding:16px}.timer{width:min(72vw,250px)}}
+</style>
+</head>
+<body>
+<main>
+ <header class="top"><div><div class="eyebrow">PERSONAL PRODUCTIVITY</div><h1>Focus Studio<span class="muted">.</span></h1></div><div class="small" id="status">Prêt à démarrer</div></header>
+ <div class="layout">
+  <section class="panel">
+   <div class="row"><strong id="phase">Session de travail</strong><span class="tiny" id="sessionLabel">SESSION 1 / 4</span></div>
+   <div class="timer"><svg viewBox="0 0 100 100" aria-label="Progression du minuteur"><circle class="track" cx="50" cy="50" r="44"/><circle id="arc" cx="50" cy="50" r="44" stroke-dasharray="276.46" stroke-dashoffset="0"/></svg><div class="center"><div class="time" id="time">25:00</div><div class="tiny" id="caption">TEMPS DE CONCENTRATION</div><div class="small" id="live" style="margin-top:12px">Prêt quand tu l'es.</div></div></div>
+   <div class="controls"><button class="btn primary" id="start">▶ Démarrer</button><button class="btn" id="reset">↺ Réinitialiser</button></div>
+   <div class="controls"><button class="btn" id="skip">Passer ⏭</button><button class="btn" id="add">+1 min</button><button class="btn" id="sound" aria-pressed="false">Son : non</button></div>
+   <div class="message" id="message" role="status" aria-live="polite">Configure tes sessions, puis lance le minuteur.</div>
+  </section>
+  <div style="display:flex;flex-direction:column;gap:16px">
+   <section class="panel"><strong>Configuration</strong><div class="settings">
+    <div><label for="count">Sessions</label><input id="count" type="number" min="1" max="20" value="4"></div>
+    <div><label for="work">Travail (min)</label><input id="work" type="number" min="1" max="180" value="25"></div>
+    <div><label for="rest">Pause (min)</label><input id="rest" type="number" min="1" max="60" value="5"></div>
+   </div><button class="btn" id="apply" style="width:100%">Appliquer les réglages</button><p class="small">Les réglages réinitialisent le cycle en cours.</p></section>
+   <section class="panel"><strong>Progression globale</strong><div class="row" style="margin:14px 0 8px"><span class="small">Sessions terminées</span><strong id="done">0 / 4</strong></div><div class="bar"><div id="overall"></div></div><div class="row small" style="margin-top:6px"><span>Début</span><span id="percent">0 %</span></div><div class="stats"><div class="stat"><div class="tiny">Temps focalisé</div><strong id="focused">0 min</strong></div><div class="stat"><div class="tiny">Restantes</div><strong id="remaining">4</strong></div></div></section>
+   <section class="panel"><div class="row"><strong>Tes sessions</strong><span class="tiny">EN DIRECT</span></div><div class="sessions" id="sessions"></div><div class="small" id="next" style="margin-top:12px">Prochaine étape : session 1</div></section>
+  </div>
+ </div>
+ <p class="small" style="text-align:center;margin-top:18px">FOCUS · RESPIRATION · RÉGULARITÉ</p>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), circumference=276.46;
+let cfg={count:4,work:25,rest:5},session=1,phase='work',remaining=1500,total=1500,completed=0,focused=0,running=false,deadline=0,interval=null,alarm=false,ended=false,audio=null;
+function fmt(s){s=Math.max(0,Math.ceil(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')}
+function message(s){$('message').textContent=s}
+function stop(){running=false;if(interval){clearInterval(interval);interval=null}}
+function beep(){if(!alarm)return;try{audio=audio||new(window.AudioContext||window.webkitAudioContext)();if(audio.state==='suspended')audio.resume();[660,880].forEach((f,i)=>{const o=audio.createOscillator(),g=audio.createGain();o.frequency.value=f;o.type='sine';g.gain.value=.06;o.connect(g);g.connect(audio.destination);const t=audio.currentTime+i*.2;g.gain.setValueAtTime(.06,t);g.gain.exponentialRampToValueAtTime(.001,t+.17);o.start(t);o.stop(t+.18)})}catch(e){}}
+function init(){stop();session=1;phase='work';remaining=cfg.work*60;total=remaining;completed=0;focused=0;ended=false;render()}
+function advance(){if(phase==='work'){completed=Math.min(cfg.count,completed+1);focused+=cfg.work*60;if(completed>=cfg.count){ended=true;stop();remaining=0;total=1;message('Objectif atteint. Toutes tes sessions sont terminées.');beep();render();return}phase='rest';remaining=cfg.rest*60;total=remaining;message('Session terminée. Profite de ta pause.')}else{session=Math.min(cfg.count,session+1);phase='work';remaining=cfg.work*60;total=remaining;message('Pause terminée. Prêt pour la prochaine session ?')}beep();render()}
+function tick(){if(!running)return;remaining=Math.max(0,(deadline-Date.now())/1000);if(remaining<=0){remaining=0;stop();advance();return}render()}
+function start(){if(ended){message('Objectif terminé. Réinitialise pour recommencer.');return}if(running){remaining=Math.max(0,(deadline-Date.now())/1000);stop();message('Minuteur en pause.');render();return}deadline=Date.now()+remaining*1000;running=true;message(phase==='work'?'Concentration en cours.':'Pause en cours.');interval=setInterval(tick,200);render()}
+function render(){
+ $('time').textContent=fmt(remaining);$('phase').textContent=phase==='work'?'Session de travail':'Pause';$('caption').textContent=ended?'OBJECTIF ATTEINT':phase==='work'?'TEMPS DE CONCENTRATION':'TEMPS DE RÉCUPÉRATION';$('sessionLabel').textContent=`SESSION ${Math.min(session,cfg.count)} / ${cfg.count}`;$('arc').style.strokeDashoffset=String(circumference*(1-(total?remaining/total:0)));$('arc').style.stroke=phase==='rest'?'#7d8978':'var(--accent)';$('start').textContent=running?'Ⅱ Pause':remaining<total&&!ended?'▶ Reprendre':'▶ Démarrer';$('status').textContent=ended?'Terminé':running?'En cours':remaining<total?'En pause':'Prêt à démarrer';$('live').textContent=ended?'Bien joué.':running?'Minuteur actif':remaining<total?'En pause':'Prêt quand tu l’es.';
+ $('done').textContent=`${completed} / ${cfg.count}`;$('overall').style.width=(completed/cfg.count*100)+'%';$('percent').textContent=Math.round(completed/cfg.count*100)+' %';$('focused').textContent=focused>=3600?`${Math.floor(focused/3600)} h ${Math.floor(focused%3600/60)} min`:`${Math.floor(focused/60)} min`;$('remaining').textContent=cfg.count-completed;
+ const wrap=$('sessions');wrap.replaceChildren();for(let i=1;i<=cfg.count;i++){const d=document.createElement('div');d.className='session'+(i<=completed?' done':i===session&&!ended?' current':'');d.textContent=i<=completed?'✓':String(i);d.title=i<=completed?'Session terminée':i===session?'Session actuelle':'Session à venir';wrap.appendChild(d)}
+ $('next').textContent=ended?'Objectif atteint':phase==='work'?`Prochaine étape : pause de ${cfg.rest} min`:`Prochaine étape : session ${Math.min(session+1,cfg.count)}`;$('skip').disabled=ended;$('add').disabled=ended;
+}
+$('start').addEventListener('click',start);$('reset').addEventListener('click',()=>{init();message('Minuteur réinitialisé.')});$('skip').addEventListener('click',()=>{if(ended)return;stop();advance()});$('add').addEventListener('click',()=>{if(ended)return;remaining+=60;total+=60;if(running)deadline+=60000;message('Une minute a été ajoutée.');render()});
+$('sound').addEventListener('click',()=>{alarm=!alarm;$('sound').textContent='Son : '+(alarm?'oui':'non');$('sound').setAttribute('aria-pressed',String(alarm));if(alarm)beep()});
+$('apply').addEventListener('click',()=>{const count=Number($('count').value),work=Number($('work').value),rest=Number($('rest').value);if(!Number.isInteger(count)||count<1||count>20||!Number.isInteger(work)||work<1||work>180||!Number.isInteger(rest)||rest<1||rest>60){message('Valeurs autorisées : 1–20 sessions, travail 1–180 min, pause 1–60 min.');return}cfg={count,work,rest};init();message('Réglages appliqués. Nouveau cycle prêt.')});
+init();
+})();
+</script>
+</body>
+</html>
